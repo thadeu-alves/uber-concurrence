@@ -4,50 +4,35 @@ import java.util.Queue;
 import java.util.LinkedList;
 
 public class Filacorridas {
-	Queue<Corrida> fila;
-	
-	public Filacorridas() {
-		this.fila = new LinkedList<>();
-	}
-	
-	public boolean verificarVazio() {
-		return fila.isEmpty();
-	}
-	public void addCorrida(Corrida corrida) {
-		this.fila.offer(corrida);
-	}
-	public Corrida proximaCorrida() {
 
-	    if (fila.isEmpty()) {
-	        return null;
-	    }
+    private Queue<Corrida> fila;
 
-	    for (Corrida c : fila) {
-	        if (c.getStatus().equals("pendente")) {
-	            return c;
-	        }
-	    }
-	    return null;
-	}
-	public void removerCorrida() {
-	    if (!fila.isEmpty()) {
-	        fila.poll();
-	    }
-	}
-	public int tamanhoFila() {
-		return fila.size();
-	}
-	public void mostrarFila() {
-		if(!verificarVazio()) {
-			System.out.print("\nFila Atual: \n");
-			int i = 1;
-			for(Corrida atual:fila) {
-				System.out.println(i+" - " + atual);
-				i++;
-			}
-			return;
-		}
-		System.out.print("Fila Vazia\n");
-	}
-	
+    public Filacorridas() {
+        this.fila = new LinkedList<>();
+    }
+
+    public synchronized void addCorrida(Corrida corrida) {
+        fila.offer(corrida);
+    }
+
+    public synchronized Corrida pegarCorridaDisponivel() {
+        for (Corrida c : fila) {
+            if (c.getStatus().equals("pendente")) {
+                fila.remove(c);
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public void mostrarFila() {
+        if (fila.isEmpty()) {
+            System.out.println("Fila vazia");
+            return;
+        }
+
+        for (Corrida c : fila) {
+            System.out.println(c);
+        }
+    }
 }

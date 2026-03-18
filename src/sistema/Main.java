@@ -6,8 +6,8 @@ package sistema;
 
 public class Main {
     public static void main(String[] args) {
-        Sistema ex = new Sistema();
-        ex.Aplicativo();
+        Sistema aplicativo = new Sistema();
+        aplicativo.Aplicativo();
 
     }
 }

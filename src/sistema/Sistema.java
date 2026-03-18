@@ -1,132 +1,98 @@
 package sistema;
 
-import java.util.Scanner;
-import java.util.Queue;
-import java.util.LinkedList;
-
-
+import java.util.*;
 
 public class Sistema {
-	Scanner sc = new Scanner(System.in);
-	String usuario = "";
-	Queue<Motorista> motoristas;
-	Filacorridas filaCorrida = new Filacorridas();
-	public Sistema() {
-	    this.motoristas = new LinkedList<>();
-	}
-	
-	public void Aplicativo() {
-	    int op;
 
-	    do {
-	        System.out.println("\n=== MENU ===");
-	        System.out.println("[1] Cadastrar motorista");
-	        System.out.println("[2] Criar corrida");
-	        System.out.println("[3] Aceitar corrida");
-	        System.out.println("[4] Listar motoristas");
-	        System.out.println("[5] Ver fila de corridas");
-	        System.out.println("[6] Finalizar corrida");
-	        System.out.println("[0] Sair");
-	        System.out.print("Opção: ");
+    Scanner sc = new Scanner(System.in);
 
-	        op = sc.nextInt();
-	        sc.nextLine();
+    List<Motorista> motoristas = new ArrayList<>();
+    Filacorridas fila = new Filacorridas();
 
-	        switch (op) {
+    public void Aplicativo() {
 
-	            case 1: adicionarMotorista(this.cadastrarMotorista());break;
-	            case 2: filaCorrida.addCorrida(this.cadastrarCorrida());;break;
+        int op;
 
-	            case 3:this.aceitarCorrida();break;
+        do {
+            System.out.println("\n=== MENU ===");
+            System.out.println("[1] Cadastrar motorista");
+            System.out.println("[2] Criar corrida");
+            System.out.println("[3] Iniciar corridas (paralelo)");
+            System.out.println("[4] Listar motoristas");
+            System.out.println("[5] Ver fila");
+            System.out.println("[6] Finalizar corrida manual");
+            System.out.println("[0] Sair");
 
-	            case 4: this.listarMotoristas();break;
-	            case 5:filaCorrida.mostrarFila();break;
-	            case 6: finalizarCorrida();break;
-	            case 0:System.out.println("Encerrando sistema...");break;
+            op = sc.nextInt();
+            sc.nextLine();
 
-	            default:
-	                System.out.println("Opção inválida!");
-	        }
+            switch (op) {
 
-	    } while (op != 0);
-	}
-	
-	public void adicionarMotorista(Motorista m) {
-		motoristas.offer(m);
-	}
-	public void removerMotorista(Motorista m) {
-		if(motoristas.isEmpty()) {
-			motoristas.poll();
-			return;
-		}
-		System.out.print("\n não tem motoristas disponivel\n");
-	}
-	public Motorista getMotoristaDisponivel() {
-	    for (Motorista motoristaAux : motoristas) {
-	        if (motoristaAux.getStatus().equals("disponivel")) {
-	            return motoristaAux;
-	        }
-	    }
-	    return null;
-	}
-	public void listarMotoristas() {
-		if(this.motoristas.size()>=1) {
-			int i = 1;
-			for (Motorista motoristaAux : motoristas) {
-		        System.out.println( i +" - "+motoristaAux.getNome() + " - " + motoristaAux.getStatus());
-		        i ++;
-			}
-		}
-		else {
-	        System.out.println("não tem motorista disponivel");
+                case 1:
+                    motoristas.add(cadastrarMotorista());
+                    break;
 
-		}
-	    
-	}
-	public Motorista cadastrarMotorista() {
-		Motorista motoristaAux = new Motorista();
-		Scanner sc = new Scanner(System.in);
-        System.out.println("nome do motorista: ");
-        motoristaAux.setNome(sc.nextLine());
-        return motoristaAux;
-	}
-	public Corrida cadastrarCorrida() {
-		Scanner sc = new Scanner(System.in);
-		Scanner scvalor = new Scanner(System.in);
-        System.out.println("nome do passageiro: ");
+                case 2:
+                    fila.addCorrida(cadastrarCorrida());
+                    break;
+
+                case 3:
+                    iniciarCorridas();
+                    break;
+
+                case 4:
+                    listarMotoristas();
+                    break;
+
+                case 5:
+                    fila.mostrarFila();
+                    break;
+
+                case 6:
+                    finalizarManual();
+                    break;
+            }
+
+        } while (op != 0);
+    }
+
+    public void iniciarCorridas() {
+        for (Motorista m : motoristas) {
+            new Thread(() -> {
+                m.aceitarCorrida(fila);
+            }).start();
+        }
+    }
+
+    public void finalizarManual() {
+        for (Motorista m : motoristas) {
+            if (m.getCorridaAtual() != null) {
+                m.finalizarCorrida();
+                return;
+            }
+        }
+        System.out.println("Nenhuma corrida ativa");
+    }
+
+    public void listarMotoristas() {
+        for (Motorista m : motoristas) {
+            System.out.println(m.getNome() + " - " + m.getStatus());
+        }
+    }
+
+    public Motorista cadastrarMotorista() {
+        System.out.print("Nome: ");
+        return new Motorista(sc.nextLine());
+    }
+
+    public Corrida cadastrarCorrida() {
+        System.out.print("Passageiro: ");
         String nome = sc.nextLine();
-        System.out.println("preço da corrida: ");
-        int valor = scvalor.nextInt();
-        return new Corrida(nome,valor);
-	}
-	public void finalizarCorrida() {
 
-	    Motorista emCorrida = null;
+        System.out.print("Valor: ");
+        int valor = sc.nextInt();
+        sc.nextLine();
 
-	    for (Motorista m : motoristas) {
-	        if (m.getStatus().equals("rodando")) {
-	            emCorrida = m;
-	            break;
-	        }
-	    }
-
-	    if (emCorrida != null) {
-	        emCorrida.finalizarCorrida(filaCorrida);
-	    } else {
-	        System.out.println("Nenhuma corrida em andamento");
-	    }
-	}
-	public void aceitarCorrida() {
-
-	    for (Motorista motoristaAux : motoristas) {
-	    	if(motoristaAux.getStatus().equals("disponivel")){
-	    		motoristaAux.aceitarCorrida(filaCorrida);
-	    		return;
-	    	}
-	    }
-	    System.out.println("não tem motorista disponivel");
-
-
-	}
-	
+        return new Corrida(nome, valor);
+    }
 }
