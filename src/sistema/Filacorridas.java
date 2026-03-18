@@ -17,11 +17,22 @@ public class Filacorridas {
 		this.fila.offer(corrida);
 	}
 	public Corrida proximaCorrida() {
-	    if(verificarVazio()) {
-	        System.out.println("Fila vazia");
+
+	    if (fila.isEmpty()) {
 	        return null;
 	    }
-	    return fila.poll();
+
+	    for (Corrida c : fila) {
+	        if (c.getStatus().equals("pendente")) {
+	            return c;
+	        }
+	    }
+	    return null;
+	}
+	public void removerCorrida() {
+	    if (!fila.isEmpty()) {
+	        fila.poll();
+	    }
 	}
 	public int tamanhoFila() {
 		return fila.size();
@@ -29,8 +40,10 @@ public class Filacorridas {
 	public void mostrarFila() {
 		if(!verificarVazio()) {
 			System.out.print("\nFila Atual: \n");
+			int i = 1;
 			for(Corrida atual:fila) {
-				System.out.print("[ " + atual + " ] <- ");
+				System.out.println(i+" - " + atual);
+				i++;
 			}
 			return;
 		}
