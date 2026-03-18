@@ -29,23 +29,35 @@ public class Corrida {
 	    this.status = "finalizada";
 	}
 
+
 	
 	public String getPassageiro() {
 		return passageiro;
 	}
+	public void setPassageiro(String passageiro) {
+		this.passageiro = passageiro;
+	}
 	public Motorista getMotorista() {
 		return motorista;
+	}
+	public void setMotorista(Motorista motorista) {
+		this.motorista = motorista;
 	}
 	public String getStatus() {
 		return status;
 	}
-	public int getvalor() {
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public int getValor() {
 		return valor;
 	}
-	
+	public void setValor(int valor) {
+		this.valor = valor;
+	}
 	@Override
 	public String toString() {
-		return "Passageiro: " + passageiro + " Motorista: " + motorista + "Status: " + status + " Valor: " + valor;
+		return "Passageiro: " + passageiro + " Motorista: " + motorista + " Status: " + status + " Valor: " + valor;
 	}
 
 }
